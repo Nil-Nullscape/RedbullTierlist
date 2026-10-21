@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tier List Red Bull France</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f5f8;--card:#fff;--text:#14182b;--muted:#5d6479;--line:#d9dce6;--accent:#1e3a8a;--sel:#e11d48}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1120;--card:#171b30;--text:#eef0f8;--muted:#9aa2bd;--line:#2a2f4a;--accent:#8aa4ff;--sel:#fb7185}}
+:root[data-theme="dark"]{--bg:#0e1120;--card:#171b30;--text:#eef0f8;--muted:#9aa2bd;--line:#2a2f4a;--accent:#8aa4ff;--sel:#fb7185}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px;max-width:980px;margin-inline:auto}
+h1{font-size:1.5rem;margin:0 0 4px}
+p.sub{margin:0 0 14px;color:var(--muted);font-size:.9rem}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+button{font:inherit;font-size:.85rem;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--accent)}
+.tier{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:6px;background:var(--card);min-height:76px}
+.lab{width:64px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.6rem;color:#111}
+.zone{flex:1;display:flex;flex-wrap:wrap;gap:6px;padding:6px;align-content:flex-start;min-height:62px}
+.zone.over{outline:2px dashed var(--accent);outline-offset:-4px}
+.pool{border:1px solid var(--line);border-radius:10px;background:var(--card);margin-top:14px}
+.pool h2{font-size:.95rem;margin:0;padding:10px 12px 0}
+.tile{width:92px;padding:6px 5px;border-radius:8px;color:#111;text-align:center;cursor:grab;user-select:none;border:2px solid transparent;line-height:1.15}
+.tile b{display:block;font-size:.74rem}
+.tile span{display:block;font-size:.65rem;opacity:.8;margin-top:2px}
+.tile i{display:block;font-style:normal;font-size:.58rem;margin-top:3px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;opacity:.7}
+.tile.sel{border-color:var(--sel);box-shadow:0 0 0 2px var(--sel)}
+.hint{font-size:.78rem;color:var(--muted);margin:10px 2px 0}
+@media (max-width:520px){.lab{width:46px;font-size:1.2rem}.tile{width:80px}}
+</style>
+</head>
+<body>
+<h1>Tier List Red Bull 🇫🇷</h1>
+<p class="sub">Toute la gamme : classiques, sans sucre et éditions limitées. Glisse-dépose, ou touche une canette puis une ligne.</p>
+<div class="bar"><button id="reset">Réinitialiser</button><button id="shuffle">Mélanger le pool</button></div>
+<div id="tiers"></div>
+<div class="pool"><h2>Pas encore classées</h2><div class="zone" id="pool" data-tier="pool"></div></div>
+<p class="hint">Liste établie d’après les sites Red Bull francophones et les communiqués Red Bull France (Winter Edition 2026, calendrier de l’Avent). La disponibilité varie selon la saison et le revendeur.</p>
+<script>
+const DATA=[
+["original","Original","Classique","Gamme","#c9d4ee"],
+["sugarfree","Sugarfree","Sans sucre","Gamme","#d7dde8"],
+["zero","Zero","Sans sucre","Gamme","#e4e6ec"],
+["summer","Summer Edition","Sudachi · citron vert","Édition","#c7e87a"],
+["summersf","Summer Edition","Sudachi · citron vert","Sans sucre","#b4de5a"],
+["cherry","Cherry Edition","Cerise · sakura","Édition","#f6a9c4"],
+["ice","Ice Edition","Vanille · fruits rouges glacés","Édition","#bfe6f5"],
+["apple","Apple Edition","Pomme Fuji · gingembre","Édition","#f3c06a"],
+["peach","Peach Edition","Pêche blanche","Édition","#fbd0b0"],
+["pink","Pink Edition","Fruits des bois","Sans sucre","#f58fb6"],
+["seablue","Sea Blue Edition","Amélanche (juneberry)","Édition","#6fb7e8"],
+["red","Red Edition","Pastèque","Édition","#f27a7a"],
+["blue","Blue Edition","Myrtille","Édition","#7f9cf0"],
+["white","White Edition","Noix de coco · myrtille","Édition","#f2f2f2"],
+["green","Green Edition","Fruit du cactus","Édition","#9ad98d"],
+["lime","Lime Green Edition","Curuba · fleur de sureau","Édition","#d4ee6a"],
+["apricot","Apricot Edition","Abricot · fraise","Édition","#ffb98a"],
+["lilac","Lilac Edition","Aspérule · pamplemousse","Édition","#cdb0ee"],
+["glacier","Glacier Edition","Framboise givrée","Retour limité","#a9dcf0"],
+["winter","Winter Edition 2026","Pistache · fruits des bois","Limitée (sept. 2026)","#c8e6a0"],
+["wintersf","Winter Edition 2026","Pistache · fruits des bois","Limitée · sans sucres","#b5dc86"],
+["festive","Festive Edition","Arctic Berry (framboise)","Exclu calendrier de l’Avent","#f4b6c8"],
+["festive25","Festive Edition 2025","Grenade","Exclu calendrier (passée)","#e58aa0"],
+["yellow","Yellow Edition","Fruits tropicaux","Édition","#ffe066"]
+].map(([id,name,flavor,kind,color])=>({id,name,flavor,kind,color}));
+const TIERS=[["S","#ff7f7f"],["A","#ffbf7f"],["B","#ffdf7f"],["C","#ffff7f"],["D","#bfff7f"],["F","#7fffff"]];
+const KEY="rb-tier-fr-v1";
+let place={},sel=null;
+DATA.forEach(d=>place[d.id]="pool");
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)Object.keys(place).forEach(k=>{if(s[k])place[k]=s[k]})}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(place))}catch(e){}}
+const zones={};
+const tiersEl=document.getElementById("tiers");
+TIERS.forEach(([t,c])=>{
+  const row=document.createElement("div");row.className="tier";
+  row.innerHTML='<div class="lab" style="background:'+c+'">'+t+'</div>';
+  const z=document.createElement("div");z.className="zone";z.dataset.tier=t;row.appendChild(z);
+  tiersEl.appendChild(row);zones[t]=z;
+});
+zones.pool=document.getElementById("pool");
+function tile(d){
+  const e=document.createElement("div");e.className="tile";e.draggable=true;e.dataset.id=d.id;e.style.background=d.color;
+  e.innerHTML="<b>Red Bull "+d.name+"</b><span>"+d.flavor+"</span><i>"+d.kind+"</i>";
+  e.addEventListener("dragstart",ev=>{ev.dataTransfer.setData("text/plain",d.id);sel=null});
+  e.addEventListener("click",ev=>{ev.stopPropagation();sel=sel===d.id?null:d.id;render()});
+  return e;
+}
+function render(){
+  Object.values(zones).forEach(z=>z.innerHTML="");
+  DATA.forEach(d=>{const e=tile(d);if(sel===d.id)e.classList.add("sel");zones[place[d.id]].appendChild(e)});
+  save();
+}
+Object.entries(zones).forEach(([t,z])=>{
+  z.addEventListener("dragover",e=>{e.preventDefault();z.classList.add("over")});
+  z.addEventListener("dragleave",()=>z.classList.remove("over"));
+  z.addEventListener("drop",e=>{e.preventDefault();z.classList.remove("over");const id=e.dataTransfer.getData("text/plain");if(place[id]!==undefined){place[id]=t;render()}});
+  z.addEventListener("click",()=>{if(sel){place[sel]=t;sel=null;render()}});
+});
+document.getElementById("reset").onclick=()=>{DATA.forEach(d=>place[d.id]="pool");sel=null;render()};
+document.getElementById("shuffle").onclick=()=>{
+  const ids=DATA.filter(d=>place[d.id]==="pool").map(d=>d.id);
+  for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]}
+  const order=ids.concat(DATA.filter(d=>place[d.id]!=="pool").map(d=>d.id));
+  DATA.sort((a,b)=>order.indexOf(a.id)-order.indexOf(b.id));render();
+};
+render();
+</script>
+</body>
+</html>
